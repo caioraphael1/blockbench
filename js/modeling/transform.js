@@ -936,6 +936,10 @@ BARS.defineActions(function() {
 		}
 	})
 	new BarSelect('vertex_snap_mode', {
+		condition: {
+			modes: ['edit'],
+			tools: ['vertex_snap_tool']
+		},
 		options: {
 			move: true,
 			scale: {condition: () => !Format.integer_size, name: true}

@@ -1661,7 +1661,13 @@ BARS.defineActions(function() {
 			vertex: {name: true, icon: 'fiber_manual_record'},
 		},
 		icon_mode: true,
-		condition: () => Modes.edit && Mesh.hasAny() && Toolbox.selected.id != 'knife_tool',
+		condition: {
+			features: ['meshes'],
+			modes: ['edit'],
+			method: () => {
+				return Mesh.selected[0] && Toolbox.selected.id != 'knife_tool' && Toolbox.selected.id != 'pivot_tool' && Toolbox.selected.id != 'vertex_snap_tool';
+			}
+		},
 		onChange({value}) {
 			if (value === previous_selection_mode) return;
 			if (value === 'object') {
@@ -3549,7 +3555,13 @@ BARS.defineActions(function() {
 	}
 	new NumSlider('proportional_editing_range', {
 		category: 'edit',
-		condition: {modes: ['edit'], features: ['meshes']},
+		condition: {
+			modes: ['edit'], 
+			features: ['meshes'],
+			method: () => {
+				return BarItems.proportional_editing.value && Mesh.selected[0] && Mesh.selected[0].getSelectedVertices().length > 0;
+			}
+		},
 		get() {
 			return StateMemory.proportional_editing_options.range
 		},
@@ -3595,6 +3607,9 @@ BARS.defineActions(function() {
 				StateMemory.save('proportional_editing_options');
 				BarItems.proportional_editing_range.update();
 			}
-		})
+		}),
+		onChange: () => {
+			Canvas.updateAll(); // To force the update for 'proportional_editing_range'.
+		}
 	})
 })
